@@ -17,5 +17,13 @@ async def baseURL():
     return {"message" : "welcome to basics of dev"}
 
 @app.get("/books")
-async def first_api(): 
-    return BOOKS
+async def readAllBooks():
+    return f"Here are all the books \n {BOOKS}"
+
+
+@app.get("/books/{book_id}")
+async def readBooks(book_id : int): 
+    if book_id in range(len(BOOKS)): 
+        return BOOKS[book_id]
+    else: 
+        return "BOOK NOT FOUND"
