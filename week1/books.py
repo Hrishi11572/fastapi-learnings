@@ -21,9 +21,33 @@ async def readAllBooks():
     return f"Here are all the books \n {BOOKS}"
 
 
-@app.get("/books/{book_id}")
-async def readBooks(book_id : int): 
-    if book_id in range(len(BOOKS)): 
-        return BOOKS[book_id]
-    else: 
-        return "BOOK NOT FOUND"
+@app.get("/books/{book_title}")
+async def readBooks(book_title : str): 
+    for book in BOOKS: 
+        if book.get("title").casefold() == book_title.casefold(): 
+            return book 
+    
+    return "BOOK NOT FOUND."
+
+# Filtering books by category using query parameters 
+
+@app.get("/books/")
+async def getBooksByCategory(category : str):
+    books_by_cat = []
+    for book in BOOKS: 
+        if book.get("category").casefold == category.casefold():
+            books_by_cat.append(book)
+    
+    return books_by_cat
+
+# Filtering books of a particular author by category using both path params and query params 
+
+@app.get("/books/{author_}/")
+async def getBooksOfAuthByCat(author_: str , category : str): 
+    db = []
+    for book in BOOKS: 
+        if book.get("author").casefold() == author_.casefold(): 
+            if book.get("category").casefold() == category.casefold(): 
+                db.append(book)
+    
+    return db
