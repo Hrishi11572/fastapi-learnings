@@ -1,6 +1,4 @@
-# GET Method: 
-
-from fastapi import FastAPI  # pyright: ignore[reportMissingImports]
+from fastapi import Body, FastAPI  # pyright: ignore[reportMissingImports]
 
 app = FastAPI()
 
@@ -12,13 +10,15 @@ BOOKS = [
     {"title": "The Catcher in the Rye", "author": "J.D. Salinger", "category": "Novel", "published_year": 1951, "rating": 4.3, "price": 11.99}
 ]
 
+# GET Method: 
+
 @app.get("/")
 async def baseURL():
     return {"message" : "welcome to basics of dev"}
 
 @app.get("/books")
 async def readAllBooks():
-    return f"Here are all the books \n {BOOKS}"
+    return BOOKS
 
 
 @app.get("/books/{book_title}")
@@ -51,3 +51,21 @@ async def getBooksOfAuthByCat(author_: str , category : str):
                 db.append(book)
     
     return db
+
+
+# POST method : Look closely at the syntax 
+
+@app.post("/books/createBook")
+async def createBook(newBook = Body()): 
+    BOOKS.append(newBook)
+
+
+# PUT method : to update information 
+
+@app.put("/books/updateBook")
+async def updateBook(updatedBook = Body()): 
+    for i in range(len(BOOKS)):
+        if BOOKS[i].get("title").casefold() == updatedBook.get("title").casefold(): 
+            BOOKS[i] = updatedBook
+    
+    
