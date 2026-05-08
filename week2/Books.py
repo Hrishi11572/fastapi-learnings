@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Path  # type: ignore
+from fastapi import FastAPI, Path, Query # type: ignore
 from pydantic import BaseModel, Field # type: ignore
 from typing import Optional
 
@@ -75,7 +75,7 @@ async def getABook(book_id: int = Path(gt=0)): # path param must be gt 0
 
 
 @app.get("/books/by-rating/")
-async def readBookByRating(book_rating : int): 
+async def readBookByRating(book_rating : int = Query(gt=0, lt=6)): # query param validation using Query()
     book_to_return = []
     for book in BOOKS: 
         if book.rating == book_rating: 
