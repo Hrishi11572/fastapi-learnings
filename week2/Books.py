@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Body  # type: ignore
-from pydantic import BaseModel # type: ignore
+from pydantic import BaseModel, Field # type: ignore
+from typing import Optional
 
 app = FastAPI()
 
@@ -24,11 +25,23 @@ class Book:
 # VALIDATE YOUR BOOK REQUEST and then convert the data to Book()
 
 class BookRequest(BaseModel): 
-    id: int 
-    title: str 
-    author : str 
-    description : str 
-    rating : int 
+    id : Optional[int] = Field(description = "Id is not needed at instantiation", default=None)
+    title: str = Field(min_length = 3)
+    author : str = Field(min_length = 3)
+    description : str = Field(min_length = 1, max_length = 180)
+    rating : int = Field(gt=-1, lt=6)
+    
+    
+    model_config = {
+        "json_schema_extra": {
+            "example" : {
+                "title" : "a new book", 
+                "author" : "Hrishikesh Tiwari", 
+                "description" : "a new description of book", 
+                "rating" : 5 
+            }
+        }
+    }
 
      
 BOOKS = [
@@ -52,9 +65,16 @@ async def getAllBooks():
 # POST METHOD 
 
 @app.post("/createBook")
-async def createBook(book_request : BookRequest): 
+async def createBook(book_request : BookRequest): # we removed Body() and used pydantic instead, to be able to do request validation 
     newBook = Book(**book_request.model_dump())
     print(type(newBook))
-    BOOKS.append(newBook)
+    # find the id, and then append the book to BOOKS
+    BOOKS.append(find_book_id(newBook))
     
     
+def find_book_id(book : Book):
+    if len(BOOKS) > 0: 
+        book.id = BOOKS[-1].id + 1
+    else: 
+        book.id = 1     
+    return book
